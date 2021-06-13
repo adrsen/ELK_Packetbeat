@@ -1,0 +1,61 @@
+version: '2.2'
+
+services:
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.13.1
+    container_name: elasticsearch_7
+    environment:
+      - node.name=elasticsearch
+      - discovery.seed_hosts=elasticsearch
+      - cluster.initial_master_nodes=elasticsearch
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata1:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.13.1
+    container_name: kibana_7
+    environment:
+      ELASTICSEARCH_URL: "http://localhost:9200"
+      ELASTICSEARCH_PASSWORD : changeme
+    ports:
+      - 5601:5601
+    depends_on:
+      - elasticsearch
+
+  #Packetbeat container
+  packetbeat:
+    container_name: packetbeat_7
+    hostname: packetbeat
+    user: root
+    image: docker.elastic.co/beats/packetbeat:7.13.1
+    volumes:
+      - ./config/packetbeat/packetbeat.yml:/usr/share/packetbeat/packetbeat.yml
+      - ./data/:/usr/share/packetbeat/data/
+    environment:
+      - ELASTICSEARCH_HOST=localhost:9200
+      - KIBANA_HOST=localhost:5601
+    # Packetbeat needs some elevated privileges to capture network traffic.
+    # We'll grant them with POSIX capabilities.
+    cap_add: ['NET_RAW', 'NET_ADMIN']
+    # Use "host mode" networking to allow Packetbeat to capture traffic from
+    # the real network interface on the host, rather than being isolated to the
+    # container's virtual interface.
+    network_mode: host
+    command: ["-strict.perms=false"]
+    depends_on:
+      #Wait for ES to be up before we start collecting
+      - elasticsearch
+
+volumes:
+  esdata1:
+    driver: local
