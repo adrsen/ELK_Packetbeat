@@ -32,7 +32,6 @@ services:
     depends_on:
       - elasticsearch
 
-  #Packetbeat container
   packetbeat:
     container_name: packetbeat_7
     hostname: packetbeat
@@ -44,16 +43,11 @@ services:
     environment:
       - ELASTICSEARCH_HOST=localhost:9200
       - KIBANA_HOST=localhost:5601
-    # Packetbeat needs some elevated privileges to capture network traffic.
-    # We'll grant them with POSIX capabilities.
+
     cap_add: ['NET_RAW', 'NET_ADMIN']
-    # Use "host mode" networking to allow Packetbeat to capture traffic from
-    # the real network interface on the host, rather than being isolated to the
-    # container's virtual interface.
     network_mode: host
     command: ["-strict.perms=false"]
     depends_on:
-      #Wait for ES to be up before we start collecting
       - elasticsearch
 
 volumes:

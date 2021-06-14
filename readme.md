@@ -5,7 +5,7 @@ Projet de l'UE INF726 - sécurité des SI du Master Big Data de Telecom paris 20
 ## Description
 
 L'objectif du projet est de construire la stack ELK et la manipuler :
-* Construction de l'environnement (machine virtuelle + stack)
+* Construction de l'environnement
 * Réaliser une collecte de données (beats/packetbeat)
 * Traiter un fichier pcap, source https://www.netresec.com/?page=pcapfiles
 * Réaliser une indexation des données (packetbeat+elasticsearch)
@@ -26,7 +26,7 @@ L'ensemble de l'architecture est encapsulé dans des conteneurs docker et orches
 
 ### Install
 
-Se rendre dans le dossier du repo et lancer la commande suivante afin d'installer la stack
+Se rendre dans le dossier du repo et lancer la commande suivante afin d'installer la stack :
 ```
  $ docker-compose up
 ```
@@ -42,16 +42,16 @@ $ docker-compose down
 ### ingestion des données
 
 2 facons d'importer les données 
-1.  les loader directement dans Kibana
-pour ca il faudra au préalable convertir le fichier pcap en json à l'aide de wireshark
-donc installer wireshark ourvir un terminal te taper la commande:
+1.  les loader directement dans Kibana  
+Pour cela il faudra au préalable convertir le fichier pcap en json à l'aide de wireshark
+donc installer wireshark ourvir un terminal et taper la commande:
 ```
 $ tshark -r nom_du_fichier.pcap -T ek > packets.json 
 ```
 puis se rendre dans le module upload data de Kibana
 ![import-data][import-kibana]
 
-2. Loader les données via packetbeat
+2. Loader les données via packetbeat.  
 Pour cela se connecter en terminal dans le conteneur packetbeat :
 
 ```
@@ -71,21 +71,21 @@ on cree ensuite un index afin de pouvoir requeter les données dans Kibana
 
 
 ### Dasboard
-Les données sont ensuite accessible dans Kibana il ne reste plus qu'a selectionner les champs à étudier et construire des visualisations
+Les données sont ensuite accessible dans Kibana il ne reste plus qu'à selectionner les champs à étudier et construire des visualisations
 afin d'obtenir un dashboard comme le suivant :
 
 ![Dashboard][dash-V7]
 
-### Pipeline full stack
-un dossier full stack comprend egalement l'implementation de la stack ELK v5.1.1 en suivant l'article du blog Elastic.co
-[Full Stack ELK - elastic blog][fullstack-url]
+### Stack complète
+un dossier full stack comprend egalement l'implémentation de la complète stack ELK v5.1.1 + beats en suivant l'article du blog Elastic.co
+[Full Stack ELK][fullstack-url]  
 La stack est plus complete car il y a de préconfiguré le monitoring des flux reseaux locaux ainsi que le monitoring de services lancés comme une BDD mysql, un serveur nginx et un serveur apache. Les données remontées dans Elastic search via tout les services de beats : 
 * Metricbeat
 * Filebeat 
 * Hearbeat 
 * et enfin packetbeat pour le traitement des fichier de log  réseaux
 
-### pipeline full Stack simple
+### pipeline full Stack
 
 ![Pipeline][pipeline-full]
 
@@ -95,12 +95,13 @@ Inspiration, code snippets, etc.
 * [Full Stack ELK - elastic blog][fullstack-url]
 * [Analyzing Network Packets with Wireshark, Elasticsearch, and Kibana- elastic blog][blog-elastic]
 * [Deploy ELK tutorial][github-YT]
-* [Packetbeat quick start][packetbeat-doc]]
+* [Packetbeat quick start][packetbeat-doc]
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+
 [fullstack-url]: https://www.elastic.co/fr/blog/a-full-stack-in-one-command
-[pipeline-simple]: images/pipeline-simple.png
+[pipeline-simple]: images/pipeline-simple.png 
 [pipeline-full]: https://api.contentstack.io/v2/uploads/59a07b510a39c22f2827c579/download?uid=bltbd9848f3161729a2
 [dash-V7]: images/dash-V7.png
 [blog-elastic]:https://www.elastic.co/fr/blog/analyzing-network-packets-with-wireshark-elasticsearch-and-kibana
